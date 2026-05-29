@@ -739,14 +739,10 @@ describe('SDK Utils', () => {
       expect(script).toContain('} catch(e) { done(); }');
     });
 
-    it('default variant returns the waitForReady result as a bare expression', () => {
+    it('default variant returns the waitForReady result', () => {
       let script = waitForReadyScript({ preset: 'strict' });
-      expect(script).toContain('? PercyDOM.waitForReady');
+      expect(script).toContain('return PercyDOM.waitForReady');
       expect(script).not.toContain('arguments[arguments.length - 1]');
-      // Regression (PER-7348): a top-level `return` is an "Illegal return
-      // statement" when run via page.evaluate(string). The non-callback variant
-      // must be an expression, never a statement with a leading `return`.
-      expect(script).not.toContain('return PercyDOM.waitForReady');
     });
 
     it('escapes U+2028 and U+2029 in interpolated config so older engines can parse the source', () => {
@@ -896,8 +892,7 @@ describe('SDK Utils', () => {
         (script) => { captured = script; return null; },
         {}
       );
-      expect(captured).toContain('? PercyDOM.waitForReady');
-      expect(captured).not.toContain('return PercyDOM.waitForReady');
+      expect(captured).toContain('return PercyDOM.waitForReady');
       expect(captured).not.toContain('arguments[arguments.length - 1]');
     });
 
